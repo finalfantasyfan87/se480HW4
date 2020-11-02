@@ -1,7 +1,5 @@
 package se480.filters;
 
-import se480.utility.FrequentWords;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,24 +18,19 @@ public class StopwordsPipe {
         Path stopFile = Paths.get("stopwords.txt");
         try {
             stopWords = Files.readAllLines(stopFile);
+            words.removeIf(word -> stopWords.contains(word));
+            System.out.println(words);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        words.removeIf(word -> stopWords.contains(word));
-        FrequentWords.countWordsPushPrint(words);
+
+     //   FrequentWords.countWordsPushPrint(words);
     }
 
     public List convertFileToListOfWords(String fileName) throws IOException {
         Path file = Paths.get(fileName);
             wordList = Files.readAllLines(file);
-        for (String words:wordList) {
-            String[] splitWords = words.toLowerCase().trim().split("\\s+");
-            List tempList = Arrays.asList(splitWords);
-            //System.out.println(tempList);
-//         //   if(!(tempList.isEmpty())){
-           cleanedWordList.addAll(tempList);
-//     //       }
-        }
+        wordList.stream().map(words -> words.toLowerCase().trim().split("\\s+")).map(Arrays::asList).forEachOrdered(tempList -> cleanedWordList.addAll(tempList));
         return cleanedWordList;
         }
 
