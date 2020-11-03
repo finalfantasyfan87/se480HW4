@@ -14,16 +14,18 @@ public class StopwordsPipe {
     List<String> wordList;
     List<String> cleanedWordList = new ArrayList<>();
 
-    public void removeStopWordsPushWordCounter(List<String> words) {
+    public List<String> removeStopWordsPushWordCounter(List<String> words) {
+
         Path stopFile = Paths.get("stopwords.txt");
         try {
             stopWords = Files.readAllLines(stopFile);
+            System.out.println(words.size());
             words.removeIf(word -> stopWords.contains(word));
-            System.out.println(words);
+            System.out.println(words.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+return words;
      //   FrequentWords.countWordsPushPrint(words);
     }
 

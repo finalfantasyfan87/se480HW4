@@ -1,6 +1,7 @@
 package se480;
 
 
+import se480.filters.NonAlphaRemover;
 import se480.filters.StopwordsPipe;
 import se480.utility.TextFileReader;
 
@@ -16,8 +17,9 @@ public class PipeFilterDemo {
 
         StopwordsPipe stopwordsPipe = new StopwordsPipe();
         List words = stopwordsPipe.convertFileToListOfWords("alice30.txt");
-        stopwordsPipe.removeStopWordsPushWordCounter(words);
-
+        List updatedList = stopwordsPipe.removeStopWordsPushWordCounter(words);
+        NonAlphaRemover nonAlphaRemover = new NonAlphaRemover();
+        nonAlphaRemover.removeNonAlphaChars(updatedList);
 
     }
 
