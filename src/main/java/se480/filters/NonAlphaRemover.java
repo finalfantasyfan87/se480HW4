@@ -1,19 +1,22 @@
 package se480.filters;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NonAlphaRemover {
 List<String> alphaOnlyList = new ArrayList<>();
     public  List<String> removeNonAlphaChars(List<String> refactoredList){
-        for (String word : refactoredList) {
-            String alphaOnly = word.replaceAll("[^a-zA-Z0-9]", "");
-            if (!alphaOnly.isEmpty()){
-                alphaOnlyList.add(alphaOnly);
-            }
-        }
+        refactoredList.stream().map(word -> word.replaceAll("[^a-zA-Z0-9]", "")).filter(alphaOnly -> !alphaOnly.isEmpty()).forEachOrdered(alphaOnly -> alphaOnlyList.add(alphaOnly));
 System.out.println(alphaOnlyList);
 return alphaOnlyList;
     }
 
+    public void writeToFile(List<String> data) throws IOException {
+        Path file = Paths.get("tempFile.txt");
+        Files.write(file, data);
+    }
     }

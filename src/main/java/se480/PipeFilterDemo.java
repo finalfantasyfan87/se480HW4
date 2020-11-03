@@ -19,8 +19,8 @@ public class PipeFilterDemo {
         List words = stopwordsPipe.convertFileToListOfWords("alice30.txt");
         List updatedList = stopwordsPipe.removeStopWordsPushWordCounter(words);
         NonAlphaRemover nonAlphaRemover = new NonAlphaRemover();
-        nonAlphaRemover.removeNonAlphaChars(updatedList);
-
+        List alphaChars = nonAlphaRemover.removeNonAlphaChars(updatedList);
+        nonAlphaRemover.writeToFile(alphaChars);
     }
 
 }
