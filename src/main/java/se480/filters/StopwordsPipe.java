@@ -15,7 +15,6 @@ public class StopwordsPipe {
     List<String> cleanedWordList = new ArrayList<>();
 
     public List<String> removeStopWordsPushWordCounter(List<String> words) {
-
         Path stopFile = Paths.get("stopwords.txt");
         try {
             stopWords = Files.readAllLines(stopFile);

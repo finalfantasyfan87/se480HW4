@@ -1,24 +1,24 @@
 package se480.filters;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataSinkPipe {
 
     public DataSinkPipe(){}
 
-    public List<Map.Entry<String, Long>> OrderTopTen(ArrayList<String> morphologicalRootsArrayList){
+    public List<Map.Entry<String, Long>> generate10Frequent(ArrayList<String> words){
         long startTime = System.currentTimeMillis();
-        Map<String, Long> map = morphologicalRootsArrayList.stream()
-                .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+        Map<String, Long> map = words.stream().collect(Collectors.toMap(word -> word, word -> 1L, Long::sum));
 
-        List<Map.Entry<String, Long>> result = map.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(10)
-                .collect(Collectors.toList());
+        List<Map.Entry<String, Long>> toSort = new ArrayList<>(map.entrySet());
+        toSort.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        List<Map.Entry<String, Long>> result = new ArrayList<>();
+        long limit = 10;
+        for (Map.Entry<String, Long> entry : toSort) {
+            if (limit-- == 0) break;
+            result.add(entry);
+        }
 
         long endTime = System.currentTimeMillis();
         System.out.println("DataSinkPipe Execution time: " + (endTime - startTime));

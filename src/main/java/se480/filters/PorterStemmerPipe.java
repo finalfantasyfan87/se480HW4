@@ -385,18 +385,18 @@ public class PorterStemmerPipe {
         i_end = k+1; i = 0;
     }
 
-    public ArrayList<String> RootWordsPipe(String nonRootFilename){
+    public ArrayList<String> stemmerPipeWords(String nonRootFilename){
         long startTime = System.currentTimeMillis();
         char[] w = new char[501];
         String userFilepath = System.getProperty("user.dir");
         String testfileFilepath = userFilepath + "/" + nonRootFilename;
-        PorterStemmerPipe s = new PorterStemmerPipe();
+        PorterStemmerPipe stemmerPipe = new PorterStemmerPipe();
         try {
-            FileInputStream in = new FileInputStream(testfileFilepath);
+            FileInputStream fileInputStream = new FileInputStream(testfileFilepath);
 
             try {
                 while (true) {
-                    int ch = in.read();
+                    int ch = fileInputStream.read();
                     if (Character.isLetter((char) ch)) {
                         int j = 0;
 
@@ -404,22 +404,22 @@ public class PorterStemmerPipe {
                             ch = Character.toLowerCase((char) ch);
                             w[j] = (char) ch;
                             if (j < 500) j++;
-                            ch = in.read();
+                            ch = fileInputStream.read();
                             if (!Character.isLetter((char) ch)) {
                                 /* to test add(char ch) */
-                                for (int c = 0; c < j; c++) s.add(w[c]);
+                                for (int c = 0; c < j; c++) stemmerPipe.add(w[c]);
 
                                 /* or, to test add(char[] w, int j) */
-                                /* s.add(w, j); */
+                                /* stemmerPipe.add(w, j); */
 
-                                s.stem(); {
+                                stemmerPipe.stem(); {
                                     String u;
 
                                     /* and now, to test toString() : */
-                                    u = s.toString();
+                                    u = stemmerPipe.toString();
 
                                     /* to test getResultBuffer(), getResultLength() : */
-                                    /* u = new String(s.getResultBuffer(), 0, s.getResultLength()); */
+                                    /* u = new String(stemmerPipe.getResultBuffer(), 0, stemmerPipe.getResultLength()); */
                                     cleanedRootArrayList.add(u);
                                 }
                                 break;
@@ -431,16 +431,16 @@ public class PorterStemmerPipe {
                 }
             }
             catch (IOException e) {
-                System.out.println("error reading");
+                System.out.println(e.getMessage());
             }
         }
         catch (FileNotFoundException e) {
-            System.out.println("file not found");
+            System.out.println(e.getMessage());
         }
 
         long endTime = System.currentTimeMillis();
-        System.out.println("PorterStemmerPipe Execution time: " + (endTime - startTime));
-        dataSinkPipe.OrderTopTen(cleanedRootArrayList);
+        System.out.println("In StemmerPipe. The total Execution time: " + (endTime - startTime));
+        dataSinkPipe.generate10Frequent(cleanedRootArrayList);
         return cleanedRootArrayList;
     }
 }

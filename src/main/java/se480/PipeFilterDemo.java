@@ -12,15 +12,16 @@ public class PipeFilterDemo {
     static TextFileReader textFileReader;
 
     public static void main(String[] args) throws IOException {
-        TextFileReader reader = new TextFileReader();
-        List<String> textFileContents = reader.readTextFile("alice30.txt");
+    //    TextFileReader reader = new TextFileReader();
+ //       List<String> textFileContents = reader.readTextFile(args[0]);
 
         StopwordsPipe stopwordsPipe = new StopwordsPipe();
-        List words = stopwordsPipe.convertFileToListOfWords("alice30.txt");
+        List words = stopwordsPipe.convertFileToListOfWords(args[0]);
         List updatedList = stopwordsPipe.removeStopWordsPushWordCounter(words);
         NonAlphaRemover nonAlphaRemover = new NonAlphaRemover();
         List alphaChars = nonAlphaRemover.removeNonAlphaChars(updatedList);
         nonAlphaRemover.writeToFile(alphaChars);
+        nonAlphaRemover.callStemmerPipe();
     }
 
 }
