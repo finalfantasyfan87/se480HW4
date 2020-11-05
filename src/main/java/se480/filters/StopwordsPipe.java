@@ -14,18 +14,19 @@ public class StopwordsPipe {
     List<String> wordList;
     List<String> cleanedWordList = new ArrayList<>();
 
+/*    references for using lamba removeIf
+    https://howtodoinjava.com/java/collections/arraylist/arraylist-removeif/*/
     public List<String> removeStopWordsPushWordCounter(List<String> words) {
         Path stopFile = Paths.get("stopwords.txt");
         try {
             stopWords = Files.readAllLines(stopFile);
-            System.out.println(words.size());
+            System.out.println("Stopwords list size before filter: " + words.size());
             words.removeIf(word -> stopWords.contains(word));
-            System.out.println(words.size());
+            System.out.println("Stopwords list size after filter: " + words.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
 return words;
-     //   FrequentWords.countWordsPushPrint(words);
     }
 
     public List convertFileToListOfWords(String fileName) throws IOException {

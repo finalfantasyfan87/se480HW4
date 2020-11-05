@@ -2,12 +2,12 @@ package se480.filters;
 
 /**
  * Class: SE480 - Pipe that utilizes the Porter PorterStemmerPipe algorithm to
- *                stem words to their morphological root.
- *
- *                The implmentation was taken from the source below
- *                and modified to work with my other classes for this
- *                assignment.
- *
+ * stem words to their morphological root.
+ * <p>
+ * The implmentation was taken from the source below
+ * and modified to work with my other classes for this
+ * assignment.
+ * <p>
  * Author: Raquib Talukder
  * Sources Used: https://tartarus.org/martin/PorterStemmer/java.txt
  **/
@@ -47,17 +47,15 @@ import java.util.ArrayList;
  */
 
 public class PorterStemmerPipe {
+    private static final int INC = 50;
     private char[] b;
     private int i,     /* offset into b */
             i_end,     /* offset to end of stemmed word */
             j, k;
-
-    private static final int INC = 50;
     /* unit of size whereby b is increased */
-
     private DataSinkPipe dataSinkPipe;
 
-    private ArrayList<String> cleanedRootArrayList = new ArrayList<>();
+    private ArrayList<String> stemmedArraylist = new ArrayList<>();
 
     public PorterStemmerPipe() {
         b = new char[INC];
@@ -73,7 +71,7 @@ public class PorterStemmerPipe {
 
     public void add(char ch) {
         if (i == b.length) {
-            char[] new_b = new char[i+INC];
+            char[] new_b = new char[i + INC];
             for (int c = 0; c < i; c++) new_b[c] = b[c];
             b = new_b;
         }
@@ -87,8 +85,8 @@ public class PorterStemmerPipe {
      */
 
     public void add(char[] w, int wLen) {
-        if (i+wLen >= b.length) {
-            char[] new_b = new char[i+wLen+INC];
+        if (i + wLen >= b.length) {
+            char[] new_b = new char[i + wLen + INC];
             for (int c = 0; c < i; c++) new_b[c] = b[c];
             b = new_b;
         }
@@ -101,7 +99,7 @@ public class PorterStemmerPipe {
      * and getResultLength (which is generally more efficient.)
      */
     public String toString() {
-        return new String(b,0,i_end);
+        return new String(b, 0, i_end);
     }
 
     /**
@@ -124,9 +122,16 @@ public class PorterStemmerPipe {
 
     private final boolean cons(int i) {
         switch (b[i]) {
-            case 'a': case 'e': case 'i': case 'o': case 'u': return false;
-            case 'y': return (i==0) ? true : !cons(i-1);
-            default: return true;
+            case 'a':
+            case 'e':
+            case 'i':
+            case 'o':
+            case 'u':
+                return false;
+            case 'y':
+                return (i == 0) ? true : !cons(i - 1);
+            default:
+                return true;
         }
     }
 
@@ -143,15 +148,16 @@ public class PorterStemmerPipe {
     private final int m() {
         int n = 0;
         int i = 0;
-        while(true) {
+        while (true) {
             if (i > j) return n;
-            if (! cons(i)) break; i++;
+            if (!cons(i)) break;
+            i++;
         }
 
         i++;
 
-        while(true) {
-            while(true) {
+        while (true) {
+            while (true) {
                 if (i > j) return n;
                 if (cons(i)) break;
                 i++;
@@ -160,9 +166,9 @@ public class PorterStemmerPipe {
             i++;
             n++;
 
-            while(true) {
+            while (true) {
                 if (i > j) return n;
-                if (! cons(i)) break;
+                if (!cons(i)) break;
                 i++;
             }
 
@@ -173,7 +179,8 @@ public class PorterStemmerPipe {
     /* vowelinstem() is true <=> 0,...j contains a vowel */
 
     private final boolean vowelinstem() {
-        int i; for (i = 0; i <= j; i++) if (! cons(i)) return true;
+        int i;
+        for (i = 0; i <= j; i++) if (!cons(i)) return true;
         return false;
     }
 
@@ -181,7 +188,7 @@ public class PorterStemmerPipe {
 
     private final boolean doublec(int j) {
         if (j < 1) return false;
-        if (b[j] != b[j-1]) return false;
+        if (b[j] != b[j - 1]) return false;
         return cons(j);
     }
 
@@ -193,7 +200,8 @@ public class PorterStemmerPipe {
    */
 
     private final boolean cvc(int i) {
-        if (i < 2 || !cons(i) || cons(i-1) || !cons(i-2)) return false; {
+        if (i < 2 || !cons(i) || cons(i - 1) || !cons(i - 2)) return false;
+        {
             int ch = b[i];
             if (ch == 'w' || ch == 'x' || ch == 'y') return false;
         }
@@ -203,11 +211,11 @@ public class PorterStemmerPipe {
 
     private final boolean ends(String s) {
         int l = s.length();
-        int o = k-l+1;
+        int o = k - l + 1;
 
         if (o < 0) return false;
-        for (int i = 0; i < l; i++) if (b[o+i] != s.charAt(i)) return false;
-        j = k-l;
+        for (int i = 0; i < l; i++) if (b[o + i] != s.charAt(i)) return false;
+        j = k - l;
 
         return true;
     }
@@ -217,10 +225,10 @@ public class PorterStemmerPipe {
 
     private final void setto(String s) {
         int l = s.length();
-        int o = j+1;
+        int o = j + 1;
 
-        for (int i = 0; i < l; i++) b[o+i] = s.charAt(i);
-        k = j+l;
+        for (int i = 0; i < l; i++) b[o + i] = s.charAt(i);
+        k = j + l;
     }
 
     /* r(s) is used further down. */
@@ -248,25 +256,25 @@ public class PorterStemmerPipe {
 
     private final void step1() {
         if (b[k] == 's') {
-            if (ends("sses")) k -= 2; else
-            if (ends("ies")) setto("i"); else
-            if (b[k-1] != 's') k--;
+            if (ends("sses")) k -= 2;
+            else if (ends("ies")) setto("i");
+            else if (b[k - 1] != 's') k--;
         }
 
-        if (ends("eed")) { if (m() > 0) k--; } else
-
-        if ((ends("ed") || ends("ing")) && vowelinstem()) {
+        if (ends("eed")) {
+            if (m() > 0) k--;
+        } else if ((ends("ed") || ends("ing")) && vowelinstem()) {
             k = j;
-            if (ends("at")) setto("ate"); else
-            if (ends("bl")) setto("ble"); else
-            if (ends("iz")) setto("ize"); else
-            if (doublec(k)) {
-                k--; {
+            if (ends("at")) setto("ate");
+            else if (ends("bl")) setto("ble");
+            else if (ends("iz")) setto("ize");
+            else if (doublec(k)) {
+                k--;
+                {
                     int ch = b[k];
                     if (ch == 'l' || ch == 's' || ch == 'z') k++;
                 }
-            }
-            else if (m() == 1 && cvc(k)) setto("e");
+            } else if (m() == 1 && cvc(k)) setto("e");
         }
     }
 
@@ -280,82 +288,207 @@ public class PorterStemmerPipe {
       -ation) maps to -ize etc. note that the string before the suffix must give
       m() > 0. */
 
-    private final void step3() { if (k == 0) return; /* For Bug 1 */ switch (b[k-1]) {
-        case 'a': if (ends("ational")) {r("ate"); break; }
-            if (ends("tional")) { r("tion"); break; }
-            break;
-        case 'c': if (ends("enci")) { r("ence"); break; }
-            if (ends("anci")) { r("ance"); break; }
-            break;
-        case 'e': if (ends("izer")) { r("ize"); break; }
-            break;
-        case 'l': if (ends("bli")) { r("ble"); break; }
-            if (ends("alli")) { r("al"); break; }
-            if (ends("entli")) { r("ent"); break; }
-            if (ends("eli")) { r("e"); break; }
-            if (ends("ousli")) { r("ous"); break; }
-            break;
-        case 'o': if (ends("ization")) { r("ize"); break; }
-            if (ends("ation")) { r("ate"); break; }
-            if (ends("ator")) { r("ate"); break; }
-            break;
-        case 's': if (ends("alism")) { r("al"); break; }
-            if (ends("iveness")) { r("ive"); break; }
-            if (ends("fulness")) { r("ful"); break; }
-            if (ends("ousness")) { r("ous"); break; }
-            break;
-        case 't': if (ends("aliti")) { r("al"); break; }
-            if (ends("iviti")) { r("ive"); break; }
-            if (ends("biliti")) { r("ble"); break; }
-            break;
-        case 'g': if (ends("logi")) { r("log"); break; }
-    }
+    private final void step3() {
+        if (k == 0) return; /* For Bug 1 */
+        switch (b[k - 1]) {
+            case 'a':
+                if (ends("ational")) {
+                    r("ate");
+                    break;
+                }
+                if (ends("tional")) {
+                    r("tion");
+                    break;
+                }
+                break;
+            case 'c':
+                if (ends("enci")) {
+                    r("ence");
+                    break;
+                }
+                if (ends("anci")) {
+                    r("ance");
+                    break;
+                }
+                break;
+            case 'e':
+                if (ends("izer")) {
+                    r("ize");
+                    break;
+                }
+                break;
+            case 'l':
+                if (ends("bli")) {
+                    r("ble");
+                    break;
+                }
+                if (ends("alli")) {
+                    r("al");
+                    break;
+                }
+                if (ends("entli")) {
+                    r("ent");
+                    break;
+                }
+                if (ends("eli")) {
+                    r("e");
+                    break;
+                }
+                if (ends("ousli")) {
+                    r("ous");
+                    break;
+                }
+                break;
+            case 'o':
+                if (ends("ization")) {
+                    r("ize");
+                    break;
+                }
+                if (ends("ation")) {
+                    r("ate");
+                    break;
+                }
+                if (ends("ator")) {
+                    r("ate");
+                    break;
+                }
+                break;
+            case 's':
+                if (ends("alism")) {
+                    r("al");
+                    break;
+                }
+                if (ends("iveness")) {
+                    r("ive");
+                    break;
+                }
+                if (ends("fulness")) {
+                    r("ful");
+                    break;
+                }
+                if (ends("ousness")) {
+                    r("ous");
+                    break;
+                }
+                break;
+            case 't':
+                if (ends("aliti")) {
+                    r("al");
+                    break;
+                }
+                if (ends("iviti")) {
+                    r("ive");
+                    break;
+                }
+                if (ends("biliti")) {
+                    r("ble");
+                    break;
+                }
+                break;
+            case 'g':
+                if (ends("logi")) {
+                    r("log");
+                    break;
+                }
+        }
     }
 
     /* step4() deals with -ic-, -full, -ness etc. similar strategy to step3. */
 
-    private final void step4() { switch (b[k]) {
-        case 'e': if (ends("icate")) { r("ic"); break; }
-            if (ends("ative")) { r(""); break; }
-            if (ends("alize")) { r("al"); break; }
-            break;
-        case 'i': if (ends("iciti")) { r("ic"); break; }
-            break;
-        case 'l': if (ends("ical")) { r("ic"); break; }
-            if (ends("ful")) { r(""); break; }
-            break;
-        case 's': if (ends("ness")) { r(""); break; }
-            break;
-    }
+    private final void step4() {
+        switch (b[k]) {
+            case 'e':
+                if (ends("icate")) {
+                    r("ic");
+                    break;
+                }
+                if (ends("ative")) {
+                    r("");
+                    break;
+                }
+                if (ends("alize")) {
+                    r("al");
+                    break;
+                }
+                break;
+            case 'i':
+                if (ends("iciti")) {
+                    r("ic");
+                    break;
+                }
+                break;
+            case 'l':
+                if (ends("ical")) {
+                    r("ic");
+                    break;
+                }
+                if (ends("ful")) {
+                    r("");
+                    break;
+                }
+                break;
+            case 's':
+                if (ends("ness")) {
+                    r("");
+                    break;
+                }
+                break;
+        }
     }
 
     /* step5() takes off -ant, -ence etc., in context <c>vcvc<v>. */
 
     private final void step5() {
-        if (k == 0) return; /* for Bug 1 */ switch (b[k-1]) {
-            case 'a': if (ends("al")) break; return;
-            case 'c': if (ends("ance")) break;
-                if (ends("ence")) break; return;
-            case 'e': if (ends("er")) break; return;
-            case 'i': if (ends("ic")) break; return;
-            case 'l': if (ends("able")) break;
-                if (ends("ible")) break; return;
-            case 'n': if (ends("ant")) break;
+        if (k == 0) return; /* for Bug 1 */
+        switch (b[k - 1]) {
+            case 'a':
+                if (ends("al")) break;
+                return;
+            case 'c':
+                if (ends("ance")) break;
+                if (ends("ence")) break;
+                return;
+            case 'e':
+                if (ends("er")) break;
+                return;
+            case 'i':
+                if (ends("ic")) break;
+                return;
+            case 'l':
+                if (ends("able")) break;
+                if (ends("ible")) break;
+                return;
+            case 'n':
+                if (ends("ant")) break;
                 if (ends("ement")) break;
                 if (ends("ment")) break;
                 /* element etc. not stripped before the m */
-                if (ends("ent")) break; return;
-            case 'o': if (ends("ion") && j >= 0 && (b[j] == 's' || b[j] == 't')) break;
+                if (ends("ent")) break;
+                return;
+            case 'o':
+                if (ends("ion") && j >= 0 && (b[j] == 's' || b[j] == 't')) break;
                 /* j >= 0 fixes Bug 2 */
-                if (ends("ou")) break; return;
+                if (ends("ou")) break;
+                return;
             /* takes care of -ous */
-            case 's': if (ends("ism")) break; return;
-            case 't': if (ends("ate")) break;
-                if (ends("iti")) break; return;
-            case 'u': if (ends("ous")) break; return;
-            case 'v': if (ends("ive")) break; return;
-            case 'z': if (ends("ize")) break; return;
-            default: return;
+            case 's':
+                if (ends("ism")) break;
+                return;
+            case 't':
+                if (ends("ate")) break;
+                if (ends("iti")) break;
+                return;
+            case 'u':
+                if (ends("ous")) break;
+                return;
+            case 'v':
+                if (ends("ive")) break;
+                return;
+            case 'z':
+                if (ends("ize")) break;
+                return;
+            default:
+                return;
         }
 
         if (m() > 1) k = j;
@@ -368,7 +501,7 @@ public class PorterStemmerPipe {
 
         if (b[k] == 'e') {
             int a = m();
-            if (a > 1 || a == 1 && !cvc(k-1)) k--;
+            if (a > 1 || a == 1 && !cvc(k - 1)) k--;
         }
 
         if (b[k] == 'l' && doublec(k) && m() > 1) k--;
@@ -381,21 +514,29 @@ public class PorterStemmerPipe {
      */
     public void stem() {
         k = i - 1;
-        if (k > 1) { step1(); step2(); step3(); step4(); step5(); step6(); }
-        i_end = k+1; i = 0;
+        if (k > 1) {
+            step1();
+            step2();
+            step3();
+            step4();
+            step5();
+            step6();
+        }
+        i_end = k + 1;
+        i = 0;
     }
 
-    public ArrayList<String> stemmerPipeWords(String nonRootFilename){
-        long startTime = System.currentTimeMillis();
+    public ArrayList<String> stemmerPipeWords(String tempFile) {
+        long start = System.currentTimeMillis();
         char[] w = new char[501];
         String userFilepath = System.getProperty("user.dir");
-        String testfileFilepath = userFilepath + "/" + nonRootFilename;
+        String testfileFilepath = userFilepath + "/" + tempFile;
         PorterStemmerPipe stemmerPipe = new PorterStemmerPipe();
         try {
             FileInputStream fileInputStream = new FileInputStream(testfileFilepath);
 
             try {
-                while (true) {
+                do {
                     int ch = fileInputStream.read();
                     if (Character.isLetter((char) ch)) {
                         int j = 0;
@@ -406,21 +547,13 @@ public class PorterStemmerPipe {
                             if (j < 500) j++;
                             ch = fileInputStream.read();
                             if (!Character.isLetter((char) ch)) {
-                                /* to test add(char ch) */
                                 for (int c = 0; c < j; c++) stemmerPipe.add(w[c]);
 
-                                /* or, to test add(char[] w, int j) */
-                                /* stemmerPipe.add(w, j); */
-
-                                stemmerPipe.stem(); {
+                                stemmerPipe.stem();
+                                {
                                     String u;
-
-                                    /* and now, to test toString() : */
                                     u = stemmerPipe.toString();
-
-                                    /* to test getResultBuffer(), getResultLength() : */
-                                    /* u = new String(stemmerPipe.getResultBuffer(), 0, stemmerPipe.getResultLength()); */
-                                    cleanedRootArrayList.add(u);
+                                    stemmedArraylist.add(u);
                                 }
                                 break;
                             }
@@ -428,19 +561,17 @@ public class PorterStemmerPipe {
                     }
 
                     if (ch < 0) break;
-                }
-            }
-            catch (IOException e) {
+                } while (true);
+            } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
 
         long endTime = System.currentTimeMillis();
-        System.out.println("In StemmerPipe. The total Execution time: " + (endTime - startTime));
-        dataSinkPipe.generate10Frequent(cleanedRootArrayList);
-        return cleanedRootArrayList;
+        System.out.println("In StemmerPipe. The total execution time in ms: " + (endTime - start));
+        dataSinkPipe.generate10Frequent(stemmedArraylist);
+        return stemmedArraylist;
     }
 }
